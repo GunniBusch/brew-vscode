@@ -52,7 +52,7 @@ jobs:
       - shell: bash
         run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $GITHUB_ENV
       - run: npx vsce package --target ${{ env.target }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: vscode-extension-${{ env.target }}
           path: "*.vsix"
