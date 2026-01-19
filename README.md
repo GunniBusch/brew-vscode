@@ -1,71 +1,64 @@
-# brew-vscode README
+# Homebrew for VS Code
 
-This is the README for your extension "brew-vscode". After writing up a brief description, we recommend including the following sections.
+A powerful Visual Studio Code extension for Homebrew maintainers and power users. Manage your formulae, casks, and taps directly from your editor.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### 🍺 Formulas & Casks View
+A dedicated Side Bar view allows you to browse all installed Formulae, Casks, and Taps.
+- **Refresh**: Keep your view up to date with the latest Homebrew state.
+- **Context Menus**: Right-click on items to perform actions like audit, info, livecheck, and more.
 
-For example if there is an image subfolder under your extension project workspace:
+### 🛠 Developer Tools
+Built for Homebrew contributors.
+- **Open Tap as Workspace**: Right-click any Tap to open its local repository in a new window. Perfect for editing and contributing.
+- **Brew Edit**: Quickly open the source code of any formula or cask. Supports both installed and uninstalled items via a smart QuickPick.
+- **Install (Build from Source)**: Install packages with the `--build-from-source` flag easily.
+- **Create**: Run `brew create` to scaffold new formulae from a URL.
+- **Test**: Run `brew test` on your formulae.
+- **Audit & Livecheck**: Run `brew audit --strict --online` and `brew livecheck` directly from the context menu.
+- **Dependency Tree**: Visualize dependencies with `brew deps --tree`.
 
-\!\[feature X\]\(images/feature-x.png\)
+### ⚡️ Intelligent Autocompletion
+Context-aware autocompletion for Homebrew formula and cask names in your code.
+- Triggers automatically when typing inside strings locally (e.g., `depends_on "wget"`) helping you find the right package name instantly.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+### 🎨 Style Fixer
+- **Brew Style Fix**: Automatically fix style violations in your current Ruby file using `brew style --fix`.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- **Homebrew**: Must be installed and accessible in your system's `PATH`.
+
+## Commands
+
+- `Homebrew: Refresh View`: Refresh the Side Bar list.
+- `Homebrew: Install (Source)`: Install a formula/cask building from source.
+- `Homebrew: Style Fix`: Fix style issues in the active file.
+- `Homebrew: Audit`: Run strict online audit on a formula.
+- `Homebrew: Info`: Show information about a formula.
+- `Homebrew: Livecheck`: Check for newer versions.
+- `Homebrew: Dependency Tree`: Show dependency tree.
+- `Homebrew: Create`: Create a new formula.
+- `Homebrew: Test`: Run tests for a formula.
+- `Homebrew: Edit`: Open formula/cask source.
+- `Homebrew: Open Tap as Workspace`: Open a tap's git repo in VS Code.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
+This extension currently uses your system's Homebrew configuration.
+It forces `HOMEBREW_NO_INSTALL_FROM_API=1` internally to ensure developer commands interact with your local taps and formulae correctly.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+### 0.0.1
+Initial release with support for:
+- Browsing Formulae, Casks, and Taps.
+- Editing installed and uninstalled formulae.
+- Opening Taps as workspaces.
+- Autocompletion for formula names.
+- Core maintainer commands (audit, style, livecheck, etc.).
 
 ---
 
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Enjoy building with Homebrew!**
