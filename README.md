@@ -1,6 +1,6 @@
 # Homebrew for VS Code
 
-A powerful Visual Studio Code extension for Homebrew maintainers and power users. Manage your formulae, casks, and taps directly from your editor.
+A Visual Studio Code extension for Homebrew maintainers and power users. Manage your formulae, casks, and taps directly from your editor.
 
 ## Features
 
