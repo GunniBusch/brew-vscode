@@ -1,6 +1,7 @@
 {
 	"name": "brew-vscode",
 	"displayName": "brew-vscode",
+	"publisher": "GunniBusch",
 	"description": "VS Code extension for Homebrew developer commands",
 	"repository": {
 		"url": "https://github.com/GunniBusch/brew-vscode"
@@ -51,6 +52,10 @@
 			{
 				"command": "homebrew.edit",
 				"title": "Homebrew: Edit Formula (brew edit)"
+			},
+			{
+				"command": "homebrew.openFocusedWorkspace",
+				"title": "Homebrew: Open Focused Workspace..."
 			},
 			{
 				"command": "homebrew.refresh",

@@ -3,6 +3,7 @@ import * as developCommands from "./commands/develop";
 import * as infoCommands from "./commands/info";
 import * as installCommands from "./commands/install";
 import * as maintenanceCommands from "./commands/maintenance";
+import * as workspaceCommands from "./commands/workspace";
 import {
 	BrewCompletionProvider,
 	getBrewFormulae,
@@ -45,6 +46,12 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(
 			"homebrew.installSource",
 			installCommands.installFromSource,
+		),
+
+		// Workspace
+		vscode.commands.registerCommand(
+			"homebrew.openFocusedWorkspace",
+			workspaceCommands.openFocusedWorkspace,
 		),
 
 		// Info & Taps

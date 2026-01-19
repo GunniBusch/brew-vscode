@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+jobs:
+  check:
+    name: Check (Lint & Types)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20.x
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Type Check
+        run: npm run check-types
+
+  build:
+    needs: check
+    name: Build ${{ matrix.platform }}-${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - platform: win32
+            arch: x64
+            npm_config_arch: x64
+          - platform: win32
+            arch: arm64
+            npm_config_arch: arm
+          - platform: linux
+            arch: x64
+            npm_config_arch: x64
+          - platform: linux
+            arch: arm64
+            npm_config_arch: arm64
+          - platform: linux
+            arch: armhf
+            npm_config_arch: arm
+          - platform: alpine
+            arch: x64
+            npm_config_arch: x64
+          - platform: alpine
+            arch: arm64
+            npm_config_arch: arm64
+          - platform: darwin
+            arch: x64
+            npm_config_arch: x64
+          - platform: darwin
+            arch: arm64
+            npm_config_arch: arm64
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.x
+          cache: 'npm'
+      - run: npm install
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          npm_config_arch: ${{ matrix.npm_config_arch }}
+      - shell: bash
+        run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $GITHUB_ENV
+      - run: npx vsce package --target ${{ env.target }}
