@@ -2,6 +2,9 @@
 	"name": "brew-vscode",
 	"displayName": "brew-vscode",
 	"description": "VS Code extension for Homebrew developer commands",
+	"repository": {
+		"url": "https://github.com/GunniBusch/brew-vscode"
+	},
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.103.1"
