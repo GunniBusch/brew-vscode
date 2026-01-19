@@ -1,0 +1,144 @@
+{
+  "name": "brew-vscode",
+  "displayName": "brew-vscode",
+  "description": "VS Code extension for Homebrew developer commands",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.103.1"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "homebrew.styleFix",
+        "title": "Homebrew: Fix Style (brew style --fix)"
+      },
+      {
+        "command": "homebrew.installSource",
+        "title": "Homebrew: Install from Source"
+      },
+      {
+        "command": "homebrew.audit",
+        "title": "Homebrew: Audit Formula (brew audit)"
+      },
+      {
+        "command": "homebrew.info",
+        "title": "Homebrew: Info (brew info)"
+      },
+      {
+        "command": "homebrew.livecheck",
+        "title": "Homebrew: Livecheck (brew livecheck)"
+      },
+      {
+        "command": "homebrew.depsTree",
+        "title": "Homebrew: Dependency Tree (brew deps --tree)"
+      },
+      {
+        "command": "homebrew.create",
+        "title": "Homebrew: Create Formula (brew create)"
+      },
+      {
+        "command": "homebrew.test",
+        "title": "Homebrew: Test Formula (brew test)"
+      },
+      {
+        "command": "homebrew.edit",
+        "title": "Homebrew: Edit Formula (brew edit)"
+      },
+      {
+        "command": "homebrew.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "homebrew.openTap",
+        "title": "Homebrew: Open Tap as Workspace"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "homebrew-explorer",
+          "title": "Homebrew",
+          "icon": "$(beaker)"
+        }
+      ]
+    },
+    "views": {
+      "homebrew-explorer": [
+        {
+          "id": "homebrewView",
+          "name": "Homebrew"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "homebrew.refresh",
+          "when": "view == homebrewView",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "homebrew.edit",
+          "when": "view == homebrewView && viewItem == formula",
+          "title": "Edit (Open Source)"
+        },
+        {
+          "command": "homebrew.info",
+          "when": "view == homebrewView && viewItem == formula"
+        },
+        {
+          "command": "homebrew.audit",
+          "when": "view == homebrewView && viewItem == formula"
+        },
+        {
+          "command": "homebrew.livecheck",
+          "when": "view == homebrewView && viewItem == formula"
+        },
+        {
+          "command": "homebrew.installSource",
+          "when": "view == homebrewView && viewItem == formula",
+          "title": "Build from Source"
+        },
+        {
+          "command": "homebrew.openTap",
+          "when": "view == homebrewView && viewItem == tap",
+          "title": "Open as Workspace"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.108.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.52.0",
+    "eslint": "^9.39.2",
+    "esbuild": "^0.27.2",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.9.3",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}
