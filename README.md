@@ -59,6 +59,10 @@ Initial release with support for:
 - Autocompletion for formula names.
 - Core maintainer commands (audit, style, livecheck, etc.).
 
----
+## License
 
-**Enjoy building with Homebrew!**
+This project is licensed under the BSD 2-Clause License - see the [LICENSE](LICENSE) file for details.
+
+## Disclaimer
+
+This extension is an independent open-source project and is not affiliated with, endorsed by, or associated with User Homebrew or the Homebrew Project. "Homebrew" is a trademark of its respective owners.
