@@ -61,7 +61,7 @@ Initial release with support for:
 
 ## License
 
-This project is licensed under the BSD 2-Clause License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICENSE) file for details.
 
 ## Disclaimer
 
