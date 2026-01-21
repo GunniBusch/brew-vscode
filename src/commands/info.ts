@@ -6,9 +6,10 @@ import {
 } from "../utils/brewUtils";
 
 export async function info(outputChannel: vscode.OutputChannel, node?: any) {
-	let formula = node
-		? node.label
-		: getCurrentFormulaName(vscode.window.activeTextEditor);
+	let formula =
+		node && node.label
+			? node.label
+			: getCurrentFormulaName(vscode.window.activeTextEditor);
 	if (!formula) {
 		formula = await vscode.window.showInputBox({
 			prompt: "Enter formula for info",

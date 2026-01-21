@@ -19,7 +19,8 @@
 		"commands": [
 			{
 				"command": "homebrew.styleFix",
-				"title": "Homebrew: Fix Style (brew style --fix)"
+				"title": "Homebrew: Fix Style",
+				"icon": "$(wand)"
 			},
 			{
 				"command": "homebrew.installSource",
@@ -27,7 +28,8 @@
 			},
 			{
 				"command": "homebrew.audit",
-				"title": "Homebrew: Audit Formula (brew audit)"
+				"title": "Homebrew: Audit Formula",
+				"icon": "$(check)"
 			},
 			{
 				"command": "homebrew.info",
@@ -47,7 +49,8 @@
 			},
 			{
 				"command": "homebrew.test",
-				"title": "Homebrew: Test Formula (brew test)"
+				"title": "Homebrew: Test Formula",
+				"icon": "$(beaker)"
 			},
 			{
 				"command": "homebrew.edit",
@@ -120,6 +123,26 @@
 					"when": "view == homebrewView && viewItem == tap",
 					"title": "Open as Workspace"
 				}
+			],
+			"editor/title": [
+				{
+					"command": "homebrew.styleFix",
+					"when": "resourceLangId == ruby",
+					"group": "navigation",
+					"title": "Fix Style"
+				},
+				{
+					"command": "homebrew.audit",
+					"when": "resourceLangId == ruby",
+					"group": "navigation",
+					"title": "Audit"
+				},
+				{
+					"command": "homebrew.test",
+					"when": "resourceLangId == ruby",
+					"group": "navigation",
+					"title": "Test"
+				}
 			]
 		}
 	},
@@ -134,7 +157,8 @@
 		"check-types": "tsc --noEmit",
 		"lint": "biome lint",
 		"check": "biome check --write",
-		"ci": "biome ci"
+		"ci": "biome ci",
+		"deploy": "vsce publish"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.11",

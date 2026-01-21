@@ -9,6 +9,7 @@ import {
 	getBrewFormulae,
 } from "./providers/completionProvider";
 import { BrewProvider } from "./providers/treeProvider";
+import { BrewCodeLensProvider } from "./providers/codeLensProvider";
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log("Homebrew Helper is now active!");
@@ -43,9 +44,8 @@ export function activate(context: vscode.ExtensionContext) {
 		),
 
 		// Install
-		vscode.commands.registerCommand(
-			"homebrew.installSource",
-			installCommands.installFromSource,
+		vscode.commands.registerCommand("homebrew.installSource", (node) =>
+			installCommands.installFromSource(node),
 		),
 
 		// Workspace
@@ -76,6 +76,14 @@ export function activate(context: vscode.ExtensionContext) {
 			new BrewCompletionProvider(),
 			'"',
 			"'", // Trigger characters
+		),
+	);
+
+	// CodeLens Provider
+	context.subscriptions.push(
+		vscode.languages.registerCodeLensProvider(
+			{ language: "ruby", scheme: "file" },
+			new BrewCodeLensProvider(),
 		),
 	);
 }

@@ -26,9 +26,10 @@ export function styleFix() {
 }
 
 export async function audit(outputChannel: vscode.OutputChannel, node?: any) {
-	let formula = node
-		? node.label
-		: getCurrentFormulaName(vscode.window.activeTextEditor);
+	let formula =
+		node && node.label
+			? node.label
+			: getCurrentFormulaName(vscode.window.activeTextEditor);
 	if (!formula) {
 		formula = await vscode.window.showInputBox({
 			prompt: "Enter formula to audit",
@@ -47,9 +48,10 @@ export async function livecheck(
 	outputChannel: vscode.OutputChannel,
 	node?: any,
 ) {
-	let formula = node
-		? node.label
-		: getCurrentFormulaName(vscode.window.activeTextEditor);
+	let formula =
+		node && node.label
+			? node.label
+			: getCurrentFormulaName(vscode.window.activeTextEditor);
 	if (!formula) {
 		formula = await vscode.window.showInputBox({
 			prompt: "Enter formula to livecheck",
