@@ -4,31 +4,8 @@ import * as vscode from "vscode";
 // Environment configuration for Homebrew
 // We force HOMEBREW_NO_INSTALL_FROM_API to ensure we interact with local taps/formulae
 // Environment configuration for Homebrew
-// We force HOMEBREW_NO_INSTALL_FROM_API to ensure we interact with local taps/formulae by default
-export const brewEnv: { [key: string]: string | undefined } = {
-	...process.env,
-	HOMEBREW_NO_INSTALL_FROM_API: "1",
-};
-
-/**
- * Configure whether to use the Homebrew JSON API for installation.
- * @param enable If true, enables API (removes/unsets NO_INSTALL_FROM_API).
- *               If false, disables API (sets NO_INSTALL_FROM_API=1).
- */
-export function setBrewApiFetch(enable: boolean) {
-	if (enable) {
-		// To enable API, we should NOT have this set to "1".
-		// We delete it or set it to "0" (Homebrew treats "1" as true, others as false usually, but unsetting is safer)
-		delete brewEnv.HOMEBREW_NO_INSTALL_FROM_API;
-	} else {
-		// To disable API, set it to "1"
-		brewEnv.HOMEBREW_NO_INSTALL_FROM_API = "1";
-	}
-}
-
-export function isBrewApiFetchEnabled(): boolean {
-	return brewEnv.HOMEBREW_NO_INSTALL_FROM_API !== "1";
-}
+// We force HOMEBREW_NO_INSTALL_FROM_API to ensure we interact with local taps/formulae
+export const brewEnv = { ...process.env, HOMEBREW_NO_INSTALL_FROM_API: "1" };
 
 /**
  * Executes a Homebrew command.

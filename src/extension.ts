@@ -4,7 +4,7 @@ import * as infoCommands from "./commands/info";
 import * as installCommands from "./commands/install";
 import * as maintenanceCommands from "./commands/maintenance";
 import * as workspaceCommands from "./commands/workspace";
-import * as configCommands from "./commands/config";
+
 import {
 	BrewCompletionProvider,
 	getBrewFormulae,
@@ -64,23 +64,10 @@ export function activate(context: vscode.ExtensionContext) {
 		),
 		vscode.commands.registerCommand("homebrew.openTap", infoCommands.openTap),
 
-		// Config
-		vscode.commands.registerCommand(
-			"homebrew.toggleApiFetch",
-			configCommands.toggleApiFetch,
-		),
-
 		// Development
 		vscode.commands.registerCommand("homebrew.create", developCommands.create),
 		vscode.commands.registerCommand("homebrew.test", developCommands.test),
 		vscode.commands.registerCommand("homebrew.edit", developCommands.edit),
-	);
-
-	// Initialize Context Keys
-	vscode.commands.executeCommand(
-		"setContext",
-		"brew-vscode.apiFetchEnabled",
-		false, // Default logic in brewUtils is HOMEBREW_NO_INSTALL_FROM_API="1" (Disabled)
 	);
 
 	// Autocompletion Provider

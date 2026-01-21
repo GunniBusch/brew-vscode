@@ -65,10 +65,7 @@
 				"title": "Refresh",
 				"icon": "$(refresh)"
 			},
-			{
-				"command": "homebrew.toggleApiFetch",
-				"title": "Homebrew: Toggle API Fetch"
-			},
+
 			{
 				"command": "homebrew.openTap",
 				"title": "Homebrew: Open Tap as Workspace"
@@ -136,20 +133,7 @@
 					"title": "Compile (Source)",
 					"icon": "$(package)"
 				},
-				{
-					"command": "homebrew.toggleApiFetch",
-					"when": "resourceLangId == ruby && !brew-vscode.apiFetchEnabled",
-					"group": "navigation",
-					"title": "Enable API Fetch",
-					"icon": "$(cloud)"
-				},
-				{
-					"command": "homebrew.toggleApiFetch",
-					"when": "resourceLangId == ruby && brew-vscode.apiFetchEnabled",
-					"group": "navigation",
-					"title": "Disable API Fetch",
-					"icon": "$(cloud-off)"
-				},
+
 				{
 					"command": "homebrew.styleFix",
 					"when": "resourceLangId == ruby",
