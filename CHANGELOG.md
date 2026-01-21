@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-01-21
+
 ### Added
 - "Focused Workspace" command (`Homebrew: Open Focused Workspace...`) to open a VS Code workspace containing only selected formulae.
 - "Open Tap as Workspace" command to open local tap directories.
