@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Editor title bar button to "Compile (Build from Source)" for active formula.
+- Editor title bar toggle to Enable/Disable Homebrew API Fetch (`HOMEBREW_NO_INSTALL_FROM_API`).
+
 ## [0.1.0] - 2026-01-21
 
 ### Added
