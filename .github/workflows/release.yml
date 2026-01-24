@@ -33,6 +33,6 @@ jobs:
           generate_release_notes: true
       
       - name: Publish
-        run: npm run deploy
+        run: npx run deploy
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
