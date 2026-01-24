@@ -42,7 +42,11 @@ export function getBrewFormulae(): Promise<string[]> {
  * Provides autocompletion for Homebrew formula and cask names.
  * Triggers only on specific Homebrew keywords: depends_on, conflicts_with, uses_from_macos.
  */
-export class BrewCompletionProvider implements vscode.CompletionItemProvider {
+/**
+ * Provides autocompletion for Homebrew formula and cask names.
+ * Triggers only on specific Homebrew keywords: depends_on, conflicts_with, uses_from_macos.
+ */
+export class BrewFormulaNameProvider implements vscode.CompletionItemProvider {
 	provideCompletionItems(
 		document: vscode.TextDocument,
 		position: vscode.Position,
@@ -73,5 +77,110 @@ export class BrewCompletionProvider implements vscode.CompletionItemProvider {
 			item.detail = "Homebrew Formula/Cask";
 			return item;
 		});
+	}
+}
+
+/**
+ * Provides autocompletion for Homebrew DSL keywords (desc, homepage, url, etc.)
+ */
+export class BrewDSLCompletionProvider
+	implements vscode.CompletionItemProvider
+{
+	provideCompletionItems(
+		document: vscode.TextDocument,
+		position: vscode.Position,
+	): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> {
+		const items: vscode.CompletionItem[] = [];
+
+		// Simple Keywords
+		const keywords = [
+			{
+				label: "desc",
+				snippet: 'desc "${1:Description}"',
+				detail: "Formula Description",
+			},
+			{
+				label: "homepage",
+				snippet: 'homepage "${1:https://example.com}"',
+				detail: "Project Homepage",
+			},
+			{ label: "url", snippet: 'url "${1:URL}"', detail: "Source URL" },
+			{
+				label: "mirror",
+				snippet: 'mirror "${1:URL}"',
+				detail: "Mirror URL",
+			},
+			{
+				label: "sha256",
+				snippet: 'sha256 "${1:Hash}"',
+				detail: "SHA256 Checksum",
+			},
+			{ label: "license", snippet: 'license "${1:MIT}"', detail: "License" },
+			{
+				label: "version",
+				snippet: 'version "${1:1.0.0}"',
+				detail: "Explicit Version",
+			},
+			{
+				label: "revision",
+				snippet: "revision ${1:1}",
+				detail: "Formula Revision",
+			},
+		];
+
+		// Dependency Keywords
+		const depKeywords = [
+			{
+				label: "depends_on",
+				snippet: 'depends_on "${1:formula}"',
+				detail: "Runtime Dependency",
+			},
+			{
+				label: "conflicts_with",
+				snippet: 'conflicts_with "${1:formula}"',
+				detail: "Conflict",
+			},
+			{
+				label: "uses_from_macos",
+				snippet: 'uses_from_macos "${1:tool}"',
+				detail: "System Dependency",
+			},
+		];
+
+		// Block Keywords
+		const blocks = [
+			{
+				label: "def install",
+				snippet: "def install\n\t${0}\nend",
+				detail: "Install Method",
+			},
+			{
+				label: "test do",
+				snippet: "test do\n\t${0}\nend",
+				detail: "Test Block",
+			},
+		];
+
+		const createItem = (
+			def: { label: string; snippet: string; detail: string },
+			kind: vscode.CompletionItemKind,
+		) => {
+			const item = new vscode.CompletionItem(def.label, kind);
+			item.insertText = new vscode.SnippetString(def.snippet);
+			item.detail = def.detail;
+			return item;
+		};
+
+		keywords.forEach((k) =>
+			items.push(createItem(k, vscode.CompletionItemKind.Keyword)),
+		);
+		depKeywords.forEach((k) =>
+			items.push(createItem(k, vscode.CompletionItemKind.Keyword)),
+		);
+		blocks.forEach((k) =>
+			items.push(createItem(k, vscode.CompletionItemKind.Snippet)),
+		);
+
+		return items;
 	}
 }

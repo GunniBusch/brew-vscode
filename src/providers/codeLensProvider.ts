@@ -50,7 +50,7 @@ export class BrewCodeLensProvider implements vscode.CodeLensProvider {
 				tooltip: "Run brew test",
 			}),
 			new vscode.CodeLens(range, {
-				title: "$(package) Compile (Source)",
+				title: "$(package)",
 				command: "homebrew.installSource",
 				tooltip: "Install building from source",
 			}),
