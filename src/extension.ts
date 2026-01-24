@@ -6,7 +6,8 @@ import * as maintenanceCommands from "./commands/maintenance";
 import * as workspaceCommands from "./commands/workspace";
 
 import {
-	BrewCompletionProvider,
+	BrewDSLCompletionProvider,
+	BrewFormulaNameProvider,
 	getBrewFormulae,
 } from "./providers/completionProvider";
 import { BrewProvider } from "./providers/treeProvider";
@@ -70,13 +71,19 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("homebrew.edit", developCommands.edit),
 	);
 
-	// Autocompletion Provider
+	// Autocompletion Providers
 	context.subscriptions.push(
+		// 1. Formula Name Completion (Triggers on keywords like depends_on)
 		vscode.languages.registerCompletionItemProvider(
 			["ruby", "shellscript", "plaintext"],
-			new BrewCompletionProvider(),
+			new BrewFormulaNameProvider(),
 			'"',
 			"'", // Trigger characters
+		),
+		// 2. DSL Keyword Completion (Triggers generally)
+		vscode.languages.registerCompletionItemProvider(
+			["ruby"],
+			new BrewDSLCompletionProvider(),
 		),
 	);
 
