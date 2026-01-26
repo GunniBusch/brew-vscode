@@ -24,7 +24,8 @@
 			},
 			{
 				"command": "homebrew.installSource",
-				"title": "Homebrew: Install from Source"
+				"title": "Homebrew: Install from Source",
+				"icon": "$(package)"
 			},
 			{
 				"command": "homebrew.audit",
@@ -33,7 +34,8 @@
 			},
 			{
 				"command": "homebrew.info",
-				"title": "Homebrew: Info (brew info)"
+				"title": "Homebrew: Info (brew info)",
+				"icon": "$(info)"
 			},
 			{
 				"command": "homebrew.livecheck",
@@ -41,7 +43,7 @@
 			},
 			{
 				"command": "homebrew.depsTree",
-				"title": "Homebrew: Dependency Tree (brew deps --tree)"
+				"title": "Homebrew: Dependency Tree (brew deps --tree)"			
 			},
 			{
 				"command": "homebrew.create",
