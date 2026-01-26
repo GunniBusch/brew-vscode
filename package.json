@@ -167,7 +167,8 @@
 		"lint": "biome lint",
 		"check": "biome check --write",
 		"ci": "biome ci",
-		"deploy": "vsce publish"
+		"deploy": "vsce publish",
+		"release": "vsce package"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.11",
