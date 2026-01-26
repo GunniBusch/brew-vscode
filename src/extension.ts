@@ -11,7 +11,8 @@ import {
 	getBrewFormulae,
 } from "./providers/completionProvider";
 import { BrewProvider } from "./providers/treeProvider";
-import { BrewCodeLensProvider } from "./providers/codeLensProvider";
+import { CodeLensProvider as FormulaCodeLensProvider } from "./providers/formula/CodeLensProvider";
+import { CodeLensProvider as CaskCodeLensProvider } from "./providers/cask/CodeLensProvider";
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log("Homebrew Helper is now active!");
@@ -87,11 +88,15 @@ export function activate(context: vscode.ExtensionContext) {
 		),
 	);
 
-	// CodeLens Provider
+	// CodeLens Providers
 	context.subscriptions.push(
 		vscode.languages.registerCodeLensProvider(
 			{ language: "ruby", scheme: "file" },
-			new BrewCodeLensProvider(),
+			new FormulaCodeLensProvider(),
+		),
+		vscode.languages.registerCodeLensProvider(
+			{ language: "ruby", scheme: "file" },
+			new CaskCodeLensProvider(),
 		),
 	);
 }

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Command Icons**: Added `$(package)` icon to "Install from Source" and `$(info)` icon to "Info" commands in the Command Palette and menus.
+
+### Changed
+- **CodeLens Refactoring**: Split monolithic `CodeLensProvider` into specialized `FormulaCodeLensProvider` and `CaskCodeLensProvider` for better maintainability.
+- **CodeLens Placement**: Improved placement of inline actions:
+    - "Install" now appears above `def install`.
+    - "Test" now appears above `test do` / `def test`.
+- **Install Action**: Restored text label to "Install" CodeLens (now `$(package) Install`) for better visibility.
+
 ## [0.1.1] - 2026-01-24
 
 ### Added
