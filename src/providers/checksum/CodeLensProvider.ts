@@ -39,7 +39,7 @@ export class CodeLensProvider implements vscode.CodeLensProvider {
 		const lines = text.split("\n");
 
 		// Regex definitions
-		const shaRegex = /sha256\s+['"]([a-fA-F0-9]{64})['"]/g;
+		const shaRegex = /sha256\s+['"]([^'"]*)['"]/g;
 
 		// Track URLs that have an associated SHA to avoid double-adding or missing ones
 		const urlsWithSha = new Set<string>();
@@ -68,12 +68,20 @@ export class CodeLensProvider implements vscode.CodeLensProvider {
 				const cachedSha = ChecksumCache.get(associatedUrl);
 				if (cachedSha && cachedSha !== currentSha) {
 					// Mismatch found! Show Update Lens
-					// FIX: Range must start at match.index + offset to the actual hash string
-					const matchFullLength = match[0].length;
-					const matchShaStart = match[0].indexOf(currentSha);
+					// FIX: Range must start after the first quote
+					// match[0] is like: sha256 "..."
+					const matchStr = match[0];
+					const quoteMatch = matchStr.match(/['"]/);
+					if (!quoteMatch || quoteMatch.index === undefined) {
+						continue;
+					}
+
+					// Start after the opening quote
+					const matchShaStart = quoteMatch.index + 1;
+					// End is start + length of the captured SHA string
 					const matchShaEnd = matchShaStart + currentSha.length;
 
-					// Create range covering ONLY the hash string
+					// Create range covering ONLY the hash string (inside keys)
 					const range = new vscode.Range(
 						document.positionAt(match.index + matchShaStart),
 						document.positionAt(match.index + matchShaEnd),

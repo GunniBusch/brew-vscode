@@ -6,6 +6,7 @@ import * as installCommands from "./commands/install";
 import * as maintenanceCommands from "./commands/maintenance";
 import * as workspaceCommands from "./commands/workspace";
 import { CodeLensProvider as CaskCodeLensProvider } from "./providers/cask/CodeLensProvider";
+import { ChecksumCodeActionProvider } from "./providers/checksum/CodeActionProvider";
 import { CodeLensProvider as ChecksumCodeLensProvider } from "./providers/checksum/CodeLensProvider";
 import {
 	BrewDSLCompletionProvider,
@@ -27,6 +28,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Output Channel for command results (shared)
 	const outputChannel = vscode.window.createOutputChannel("Homebrew");
+
+	// Diagnostic Collection for Checksums
+	const diagnosticCollection =
+		vscode.languages.createDiagnosticCollection("homebrew-checksums");
+	context.subscriptions.push(diagnosticCollection);
 
 	// Register Commands
 	context.subscriptions.push(
@@ -68,9 +74,8 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("homebrew.openTap", infoCommands.openTap),
 
 		// Checksum
-		vscode.commands.registerCommand(
-			"homebrew.checkChecksums",
-			checksumCommands.checkChecksums,
+		vscode.commands.registerCommand("homebrew.checkChecksums", (silent) =>
+			checksumCommands.checkChecksums(silent === true, diagnosticCollection),
 		),
 		vscode.commands.registerCommand(
 			"homebrew.updateChecksum",
@@ -108,12 +113,12 @@ export function activate(context: vscode.ExtensionContext) {
 				(editor.document.languageId === "ruby" ||
 					editor.document.fileName.endsWith(".rb"))
 			) {
-				checksumCommands.checkChecksums(true);
+				checksumCommands.checkChecksums(true, diagnosticCollection);
 			}
 		}),
 		vscode.workspace.onDidSaveTextDocument((doc) => {
 			if (doc.languageId === "ruby" || doc.fileName.endsWith(".rb")) {
-				checksumCommands.checkChecksums(true);
+				checksumCommands.checkChecksums(true, diagnosticCollection);
 			}
 		}),
 	);
@@ -124,7 +129,7 @@ export function activate(context: vscode.ExtensionContext) {
 		(vscode.window.activeTextEditor.document.languageId === "ruby" ||
 			vscode.window.activeTextEditor.document.fileName.endsWith(".rb"))
 	) {
-		checksumCommands.checkChecksums(true);
+		checksumCommands.checkChecksums(true, diagnosticCollection);
 	}
 
 	// CodeLens Providers
@@ -140,6 +145,10 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.languages.registerCodeLensProvider(
 			{ language: "ruby", scheme: "file" },
 			new ChecksumCodeLensProvider(),
+		),
+		vscode.languages.registerCodeActionsProvider(
+			{ language: "ruby", scheme: "file" },
+			new ChecksumCodeActionProvider(),
 		),
 	);
 }

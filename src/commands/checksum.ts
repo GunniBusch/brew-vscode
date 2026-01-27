@@ -28,7 +28,10 @@ export class ChecksumCache {
  * Scans the active document for URLs and verifies their checksums against the declared SHA256.
  * Populates the cache.
  */
-export async function checkChecksums(silent: boolean = false): Promise<void> {
+export async function checkChecksums(
+	silent: boolean = false,
+	diagnosticCollection?: vscode.DiagnosticCollection,
+): Promise<void> {
 	const editor = vscode.window.activeTextEditor;
 	if (!editor) {
 		return;
@@ -42,9 +45,16 @@ export async function checkChecksums(silent: boolean = false): Promise<void> {
 		return;
 	}
 
-	const text = editor.document.getText();
+	const document = editor.document;
+	const text = document.getText();
 	const lines = text.split("\n");
 	const updates: Promise<void>[] = [];
+	const diagnostics: vscode.Diagnostic[] = [];
+
+	// Clear previous diagnostics for this file if collection is provided
+	if (diagnosticCollection) {
+		diagnosticCollection.delete(document.uri);
+	}
 
 	await vscode.window.withProgress(
 		{
@@ -61,6 +71,9 @@ export async function checkChecksums(silent: boolean = false): Promise<void> {
 			let match;
 			while ((match = urlRegex.exec(text)) !== null) {
 				const url = match[1];
+				const urlIndex = match.index;
+				const urlLine = document.positionAt(urlIndex).line;
+
 				// Trigger background fetch for each URL found
 				if (!ChecksumCache.has(url)) {
 					updates.push(
@@ -83,6 +96,61 @@ export async function checkChecksums(silent: boolean = false): Promise<void> {
 				if (!silent) {
 					vscode.window.setStatusBarMessage("All URLs already cached", 3000);
 				}
+			}
+
+			// Post-check: Iterate again to find mismatches and add diagnostics
+			// We need to re-scan or use the cache state now that everything is fetched.
+			// Rewind regex or re-create
+			const shaRegex = /sha256\s+['"]([^'"]*)['"]/g;
+			let shaMatch;
+			while ((shaMatch = shaRegex.exec(text)) !== null) {
+				const currentSha = shaMatch[1];
+				const shaIndex = shaMatch.index;
+				const shaPos = document.positionAt(shaIndex);
+				const shaLineIdx = shaPos.line;
+
+				// Find associated URL
+				let associatedUrl: string | undefined;
+				for (let i = shaLineIdx; i >= Math.max(0, shaLineIdx - 10); i--) {
+					const lineText = lines[i];
+					const urlMatch = lineText.match(/url\s+['"]([^'"]+)['"]/);
+					if (urlMatch) {
+						associatedUrl = urlMatch[1];
+						break;
+					}
+				}
+
+				if (associatedUrl) {
+					const cachedSha = ChecksumCache.get(associatedUrl);
+					if (cachedSha && cachedSha !== currentSha) {
+						// Mismatch! Add diagnostic
+						const start = shaMatch[0].indexOf(currentSha);
+						// Accessing match[0] directly validation
+						const matchStr = shaMatch[0];
+						const quoteMatch = matchStr.match(/['"]/);
+						if (quoteMatch && quoteMatch.index !== undefined) {
+							const matchShaStart = quoteMatch.index + 1;
+							const matchShaEnd = matchShaStart + currentSha.length;
+							const range = new vscode.Range(
+								document.positionAt(shaMatch.index + matchShaStart),
+								document.positionAt(shaMatch.index + matchShaEnd),
+							);
+
+							const diagnostic = new vscode.Diagnostic(
+								range,
+								"Checksum mismatch!",
+								vscode.DiagnosticSeverity.Warning,
+							);
+							diagnostic.source = "Homebrew Helper";
+							diagnostic.code = "homebrew-checksum-mismatch";
+							diagnostics.push(diagnostic);
+						}
+					}
+				}
+			}
+
+			if (diagnosticCollection) {
+				diagnosticCollection.set(document.uri, diagnostics);
 			}
 		},
 	);
@@ -121,10 +189,15 @@ export async function updateChecksum(
 
 		if (!targetRange && !insertMode) {
 			const lineText = lines[lineIndex];
-			const shaMatch = lineText.match(/sha256\s+['"]([a-fA-F0-9]{64})['"]/);
+			const shaMatch = lineText.match(/sha256\s+['"]([^'"]*)['"]/);
 			if (shaMatch) {
 				const start = lineText.indexOf(shaMatch[1]);
-				targetRange = new vscode.Range(lineIndex, start, lineIndex, start + 64);
+				targetRange = new vscode.Range(
+					lineIndex,
+					start,
+					lineIndex,
+					start + shaMatch[1].length,
+				);
 			}
 		}
 
