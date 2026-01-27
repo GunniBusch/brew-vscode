@@ -6,6 +6,7 @@ import * as installCommands from "./commands/install";
 import * as maintenanceCommands from "./commands/maintenance";
 import * as workspaceCommands from "./commands/workspace";
 import { CodeLensProvider as CaskCodeLensProvider } from "./providers/cask/CodeLensProvider";
+import { CodeLensProvider as ChecksumCodeLensProvider } from "./providers/checksum/CodeLensProvider";
 import {
 	BrewDSLCompletionProvider,
 	BrewFormulaNameProvider,
@@ -71,8 +72,10 @@ export function activate(context: vscode.ExtensionContext) {
 			"homebrew.checkChecksums",
 			checksumCommands.checkChecksums,
 		),
-		vscode.commands.registerCommand("homebrew.updateChecksum", (range, url) =>
-			checksumCommands.updateChecksum(range, url),
+		vscode.commands.registerCommand(
+			"homebrew.updateChecksum",
+			(range, url, insertMode) =>
+				checksumCommands.updateChecksum(range, url, insertMode),
 		),
 
 		// Development
@@ -133,6 +136,10 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.languages.registerCodeLensProvider(
 			{ language: "ruby", scheme: "file" },
 			new CaskCodeLensProvider(),
+		),
+		vscode.languages.registerCodeLensProvider(
+			{ language: "ruby", scheme: "file" },
+			new ChecksumCodeLensProvider(),
 		),
 	);
 }

@@ -98,6 +98,7 @@ export async function checkChecksums(silent: boolean = false): Promise<void> {
 export async function updateChecksum(
 	shaRange?: vscode.Range,
 	url?: string,
+	insertMode: boolean = false,
 ): Promise<void> {
 	const editor = vscode.window.activeTextEditor;
 	if (!editor) {
@@ -110,18 +111,15 @@ export async function updateChecksum(
 	let targetRange = shaRange;
 
 	// If no arguments, try to deduce from cursor position
-	if (!targetUrl || !targetRange) {
+	if (!targetUrl || (!targetRange && !insertMode)) {
 		const selection = editor.selection;
 		const lineIndex = selection.active.line;
 		const text = document.getText();
 		const lines = text.split("\n");
 
 		// Simple heuristic: Search backwards from current line for 'url', search current line or nearby for 'sha256'
-		// This is a basic fallback for menu invocation.
-		// For now, let's rely on CodeLens passing arguments or basic same-block detection.
-		// If triggered via command palette without args, we might need manual input or smart detection.
 
-		if (!targetRange) {
+		if (!targetRange && !insertMode) {
 			const lineText = lines[lineIndex];
 			const shaMatch = lineText.match(/sha256\s+['"]([a-fA-F0-9]{64})['"]/);
 			if (shaMatch) {
@@ -130,9 +128,10 @@ export async function updateChecksum(
 			}
 		}
 
-		if (targetRange && !targetUrl) {
+		if ((targetRange || insertMode) && !targetUrl) {
 			// Search backwards for url
-			for (let i = targetRange.start.line; i >= 0; i--) {
+			const startLine = targetRange ? targetRange.start.line : lineIndex;
+			for (let i = startLine; i >= 0; i--) {
 				const lineText = lines[i];
 				// Match url "..." or inside resource
 				const urlMatch = lineText.match(/url\s+['"]([^'"]+)['"]/);
@@ -151,20 +150,48 @@ export async function updateChecksum(
 		return;
 	}
 
-	if (!targetRange) {
-		vscode.window.showErrorMessage(
-			"Could not find a sha256 field to update. Please ensure your cursor is on a line with sha256.",
-		);
+	if (!targetRange && !insertMode) {
+		vscode.window.showErrorMessage("Could not find sha256 to update.");
 		return;
 	}
 
 	// CHECK CACHE FIRST
 	const cachedSha = ChecksumCache.get(targetUrl!);
+	const applySha = async (sha: string) => {
+		if (insertMode) {
+			// Insert mode: targetRange is likely the URL range (or passed as such). We want to insert after it.
+			// If we passed the URL range as shaRange in insert mode, use it.
+			let insertLine = 0;
+			if (targetRange) {
+				insertLine = targetRange.end.line;
+			} else {
+				// Try to find url line
+				// This fallback might be weak, but CodeLens passes the range.
+			}
+
+			if (targetRange) {
+				const line = document.lineAt(targetRange.end.line);
+				const currentIndent = line.text.match(/^\s*/)?.[0] || "";
+				// Insert on next line
+				await editor.edit((editBuilder) => {
+					editBuilder.insert(
+						new vscode.Position(targetRange!.end.line + 1, 0),
+						`${currentIndent}sha256 "${sha}"\n`,
+					);
+				});
+				vscode.window.setStatusBarMessage("SHA256 inserted", 3000);
+			}
+		} else {
+			// Replace mode
+			await editor.edit((editBuilder) => {
+				editBuilder.replace(targetRange!, sha);
+			});
+			vscode.window.setStatusBarMessage("SHA256 updated", 3000);
+		}
+	};
+
 	if (cachedSha) {
-		await editor.edit((editBuilder) => {
-			editBuilder.replace(targetRange!, cachedSha);
-		});
-		vscode.window.setStatusBarMessage("SHA256 updated from cache", 3000);
+		await applySha(cachedSha);
 		return;
 	}
 
@@ -180,14 +207,7 @@ export async function updateChecksum(
 				const sha = await calculateSha256(targetUrl!, token);
 				if (sha) {
 					ChecksumCache.set(targetUrl!, sha);
-					const finalSha = sha; // Check needed for TS narrowing if logic changes
-					await editor.edit((editBuilder) => {
-						editBuilder.replace(targetRange!, finalSha);
-					});
-					vscode.window.setStatusBarMessage(
-						"SHA256 updated successfully",
-						3000,
-					);
+					await applySha(sha);
 				}
 			} catch (error: any) {
 				vscode.window.showErrorMessage(
