@@ -3,11 +3,11 @@
 	"displayName": "brew-vscode",
 	"publisher": "GunniBusch",
 	"description": "VS Code extension for Homebrew developer commands",
-	"tags": ["homebrew", "brew", "formula", "cask", "tap"],
+	"keywords": ["homebrew", "brew", "formula", "cask", "tap"],
 	"repository": {
 		"url": "https://github.com/GunniBusch/brew-vscode"
 	},
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"engines": {
 		"vscode": "^1.103.1"
 	},
