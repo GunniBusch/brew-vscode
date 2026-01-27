@@ -1,10 +1,27 @@
 import * as vscode from "vscode";
 
 export class CodeLensProvider implements vscode.CodeLensProvider {
+	private _onDidChangeCodeLenses = new vscode.EventEmitter<void>();
+	readonly onDidChangeCodeLenses = this._onDidChangeCodeLenses.event;
+
+	constructor() {
+		// Also refresh when config changes
+		vscode.workspace.onDidChangeConfiguration((e) => {
+			if (e.affectsConfiguration("homebrew.codeLens")) {
+				this._onDidChangeCodeLenses.fire();
+			}
+		});
+	}
+
 	provideCodeLenses(
 		document: vscode.TextDocument,
 		token: vscode.CancellationToken,
 	): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
+		const config = vscode.workspace.getConfiguration("homebrew.codeLens");
+		if (!config.get<boolean>("enabled", true)) {
+			return [];
+		}
+
 		const lenses: vscode.CodeLens[] = [];
 		const text = document.getText();
 
@@ -16,48 +33,54 @@ export class CodeLensProvider implements vscode.CodeLensProvider {
 		let match;
 
 		// Check for Formula - Add Audit
-		while ((match = formulaRegex.exec(text)) !== null) {
-			const range = new vscode.Range(
-				document.positionAt(match.index),
-				document.positionAt(match.index + match[0].length),
-			);
-			lenses.push(
-				new vscode.CodeLens(range, {
-					title: "$(check) Audit",
-					command: "homebrew.audit",
-					tooltip: "Run brew audit",
-				}),
-			);
+		if (config.get<boolean>("audit.enabled", true)) {
+			while ((match = formulaRegex.exec(text)) !== null) {
+				const range = new vscode.Range(
+					document.positionAt(match.index),
+					document.positionAt(match.index + match[0].length),
+				);
+				lenses.push(
+					new vscode.CodeLens(range, {
+						title: "$(check) Audit",
+						command: "homebrew.audit",
+						tooltip: "Run brew audit",
+					}),
+				);
+			}
 		}
 
 		// Check for install definition
-		while ((match = installRegex.exec(text)) !== null) {
-			const range = new vscode.Range(
-				document.positionAt(match.index),
-				document.positionAt(match.index + match[0].length),
-			);
-			lenses.push(
-				new vscode.CodeLens(range, {
-					title: "$(package) Install",
-					command: "homebrew.installSource",
-					tooltip: "Install building from source",
-				}),
-			);
+		if (config.get<boolean>("install.enabled", true)) {
+			while ((match = installRegex.exec(text)) !== null) {
+				const range = new vscode.Range(
+					document.positionAt(match.index),
+					document.positionAt(match.index + match[0].length),
+				);
+				lenses.push(
+					new vscode.CodeLens(range, {
+						title: "$(package) Install",
+						command: "homebrew.installSource",
+						tooltip: "Install building from source",
+					}),
+				);
+			}
 		}
 
 		// Check for test definition
-		while ((match = testRegex.exec(text)) !== null) {
-			const range = new vscode.Range(
-				document.positionAt(match.index),
-				document.positionAt(match.index + match[0].length),
-			);
-			lenses.push(
-				new vscode.CodeLens(range, {
-					title: "$(beaker) Test",
-					command: "homebrew.test",
-					tooltip: "Run brew test",
-				}),
-			);
+		if (config.get<boolean>("test.enabled", true)) {
+			while ((match = testRegex.exec(text)) !== null) {
+				const range = new vscode.Range(
+					document.positionAt(match.index),
+					document.positionAt(match.index + match[0].length),
+				);
+				lenses.push(
+					new vscode.CodeLens(range, {
+						title: "$(beaker) Test",
+						command: "homebrew.test",
+						tooltip: "Run brew test",
+					}),
+				);
+			}
 		}
 
 		return lenses;

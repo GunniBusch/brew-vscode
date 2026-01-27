@@ -43,7 +43,7 @@
 			},
 			{
 				"command": "homebrew.depsTree",
-				"title": "Homebrew: Dependency Tree (brew deps --tree)"			
+				"title": "Homebrew: Dependency Tree (brew deps --tree)"
 			},
 			{
 				"command": "homebrew.create",
@@ -61,6 +61,15 @@
 			{
 				"command": "homebrew.openFocusedWorkspace",
 				"title": "Homebrew: Open Focused Workspace..."
+			},
+
+			{
+				"command": "homebrew.checkChecksums",
+				"title": "Homebrew: Check Checksums"
+			},
+			{
+				"command": "homebrew.updateChecksum",
+				"title": "Homebrew: Update Checksum"
 			},
 			{
 				"command": "homebrew.refresh",
@@ -135,7 +144,11 @@
 					"title": "Compile (Source)",
 					"icon": "$(package)"
 				},
-
+				{
+					"command": "homebrew.updateChecksum",
+					"when": "resourceLangId == ruby",
+					"title": "Update Checksum"
+				},
 				{
 					"command": "homebrew.styleFix",
 					"when": "resourceLangId == ruby",
@@ -155,6 +168,36 @@
 					"title": "Test"
 				}
 			]
+		},
+		"configuration": {
+			"title": "Homebrew Helper",
+			"properties": {
+				"homebrew.codeLens.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable CodeLens in Homebrew files"
+				},
+				"homebrew.codeLens.install.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable 'Install' CodeLens"
+				},
+				"homebrew.codeLens.audit.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable 'Audit' CodeLens"
+				},
+				"homebrew.codeLens.test.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable 'Test' CodeLens"
+				},
+				"homebrew.codeLens.updateChecksum.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable 'Update Checksum' CodeLens"
+				}
+			}
 		}
 	},
 	"scripts": {

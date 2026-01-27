@@ -1,18 +1,20 @@
 import * as vscode from "vscode";
+import * as checksumCommands from "./commands/checksum";
 import * as developCommands from "./commands/develop";
 import * as infoCommands from "./commands/info";
 import * as installCommands from "./commands/install";
 import * as maintenanceCommands from "./commands/maintenance";
 import * as workspaceCommands from "./commands/workspace";
-
+import { CodeLensProvider as CaskCodeLensProvider } from "./providers/cask/CodeLensProvider";
+import { ChecksumCodeActionProvider } from "./providers/checksum/CodeActionProvider";
+import { CodeLensProvider as ChecksumCodeLensProvider } from "./providers/checksum/CodeLensProvider";
 import {
 	BrewDSLCompletionProvider,
 	BrewFormulaNameProvider,
 	getBrewFormulae,
 } from "./providers/completionProvider";
-import { BrewProvider } from "./providers/treeProvider";
 import { CodeLensProvider as FormulaCodeLensProvider } from "./providers/formula/CodeLensProvider";
-import { CodeLensProvider as CaskCodeLensProvider } from "./providers/cask/CodeLensProvider";
+import { BrewProvider } from "./providers/treeProvider";
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log("Homebrew Helper is now active!");
@@ -26,6 +28,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Output Channel for command results (shared)
 	const outputChannel = vscode.window.createOutputChannel("Homebrew");
+
+	// Diagnostic Collection for Checksums
+	const diagnosticCollection =
+		vscode.languages.createDiagnosticCollection("homebrew-checksums");
+	context.subscriptions.push(diagnosticCollection);
 
 	// Register Commands
 	context.subscriptions.push(
@@ -66,6 +73,16 @@ export function activate(context: vscode.ExtensionContext) {
 		),
 		vscode.commands.registerCommand("homebrew.openTap", infoCommands.openTap),
 
+		// Checksum
+		vscode.commands.registerCommand("homebrew.checkChecksums", (silent) =>
+			checksumCommands.checkChecksums(silent === true, diagnosticCollection),
+		),
+		vscode.commands.registerCommand(
+			"homebrew.updateChecksum",
+			(range, url, insertMode) =>
+				checksumCommands.updateChecksum(range, url, insertMode),
+		),
+
 		// Development
 		vscode.commands.registerCommand("homebrew.create", developCommands.create),
 		vscode.commands.registerCommand("homebrew.test", developCommands.test),
@@ -88,6 +105,33 @@ export function activate(context: vscode.ExtensionContext) {
 		),
 	);
 
+	// Checksum Auto-Check Events
+	context.subscriptions.push(
+		vscode.window.onDidChangeActiveTextEditor((editor) => {
+			if (
+				editor &&
+				(editor.document.languageId === "ruby" ||
+					editor.document.fileName.endsWith(".rb"))
+			) {
+				checksumCommands.checkChecksums(true, diagnosticCollection);
+			}
+		}),
+		vscode.workspace.onDidSaveTextDocument((doc) => {
+			if (doc.languageId === "ruby" || doc.fileName.endsWith(".rb")) {
+				checksumCommands.checkChecksums(true, diagnosticCollection);
+			}
+		}),
+	);
+
+	// Initial check on startup if active editor is ruby
+	if (
+		vscode.window.activeTextEditor &&
+		(vscode.window.activeTextEditor.document.languageId === "ruby" ||
+			vscode.window.activeTextEditor.document.fileName.endsWith(".rb"))
+	) {
+		checksumCommands.checkChecksums(true, diagnosticCollection);
+	}
+
 	// CodeLens Providers
 	context.subscriptions.push(
 		vscode.languages.registerCodeLensProvider(
@@ -97,6 +141,14 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.languages.registerCodeLensProvider(
 			{ language: "ruby", scheme: "file" },
 			new CaskCodeLensProvider(),
+		),
+		vscode.languages.registerCodeLensProvider(
+			{ language: "ruby", scheme: "file" },
+			new ChecksumCodeLensProvider(),
+		),
+		vscode.languages.registerCodeActionsProvider(
+			{ language: "ruby", scheme: "file" },
+			new ChecksumCodeActionProvider(),
 		),
 	);
 }
