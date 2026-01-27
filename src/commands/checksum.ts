@@ -1,6 +1,7 @@
 import * as crypto from "node:crypto";
 import * as https from "node:https";
 import * as vscode from "vscode";
+import { SHA256_REGEX, URL_REGEX } from "../utils/regex";
 
 // Cache structure: Map<URL, { sha: string, timestamp: number }>
 // We can set a TTL if we want, but for now just persisting for the session is fine.
@@ -66,8 +67,7 @@ export async function checkChecksums(
 		},
 		async (progress, token) => {
 			// Naive parsing: find all url "..." lines
-			// In a real parser we'd map URL to SHA block, but here we just want to fetch all URLs found to populate cache.
-			const urlRegex = /url\s+['"]([^'"]+)['"]/g;
+			const urlRegex = new RegExp(URL_REGEX, "g");
 			let match;
 			while ((match = urlRegex.exec(text)) !== null) {
 				const url = match[1];
@@ -99,9 +99,7 @@ export async function checkChecksums(
 			}
 
 			// Post-check: Iterate again to find mismatches and add diagnostics
-			// We need to re-scan or use the cache state now that everything is fetched.
-			// Rewind regex or re-create
-			const shaRegex = /sha256\s+['"]([^'"]*)['"]/g;
+			const shaRegex = new RegExp(SHA256_REGEX, "g");
 			let shaMatch;
 			while ((shaMatch = shaRegex.exec(text)) !== null) {
 				const currentSha = shaMatch[1];
@@ -189,7 +187,7 @@ export async function updateChecksum(
 
 		if (!targetRange && !insertMode) {
 			const lineText = lines[lineIndex];
-			const shaMatch = lineText.match(/sha256\s+['"]([^'"]*)['"]/);
+			const shaMatch = lineText.match(SHA256_REGEX);
 			if (shaMatch) {
 				const start = lineText.indexOf(shaMatch[1]);
 				targetRange = new vscode.Range(
@@ -207,7 +205,7 @@ export async function updateChecksum(
 			for (let i = startLine; i >= 0; i--) {
 				const lineText = lines[i];
 				// Match url "..." or inside resource
-				const urlMatch = lineText.match(/url\s+['"]([^'"]+)['"]/);
+				const urlMatch = lineText.match(URL_REGEX);
 				if (urlMatch) {
 					targetUrl = urlMatch[1];
 					break;

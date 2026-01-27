@@ -3,6 +3,7 @@ import {
 	ChecksumCache,
 	onDidChangeChecksumCache,
 } from "../../commands/checksum";
+import { SHA256_REGEX, URL_REGEX } from "../../utils/regex";
 
 export class CodeLensProvider implements vscode.CodeLensProvider {
 	private _onDidChangeCodeLenses = new vscode.EventEmitter<void>();
@@ -38,8 +39,9 @@ export class CodeLensProvider implements vscode.CodeLensProvider {
 		const text = document.getText();
 		const lines = text.split("\n");
 
-		// Regex definitions
-		const shaRegex = /sha256\s+['"]([^'"]*)['"]/g;
+		// Regex definitions (global flags for iteration)
+		const shaRegex = new RegExp(SHA256_REGEX, "g");
+		const urlRegex = new RegExp(URL_REGEX, "g");
 
 		// Track URLs that have an associated SHA to avoid double-adding or missing ones
 		const urlsWithSha = new Set<string>();
@@ -98,9 +100,6 @@ export class CodeLensProvider implements vscode.CodeLensProvider {
 				}
 			}
 		}
-
-		// Check for URLs that MISS a checksum
-		const urlRegex = /url\s+['"]([^'"]+)['"]/g;
 		while ((match = urlRegex.exec(text)) !== null) {
 			const url = match[1];
 			if (!urlsWithSha.has(url)) {

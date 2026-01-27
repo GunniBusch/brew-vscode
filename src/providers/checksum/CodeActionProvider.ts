@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { URL_REGEX } from "../../utils/regex";
 
 export class ChecksumCodeActionProvider implements vscode.CodeActionProvider {
 	public static readonly providedCodeActionKinds = [
@@ -38,7 +39,7 @@ export class ChecksumCodeActionProvider implements vscode.CodeActionProvider {
 
 		for (let i = shaLineIdx; i >= Math.max(0, shaLineIdx - 10); i--) {
 			const lineText = lines[i];
-			const urlMatch = lineText.match(/url\s+['"]([^'"]+)['"]/);
+			const urlMatch = lineText.match(URL_REGEX);
 			if (urlMatch) {
 				associatedUrl = urlMatch[1];
 				break;

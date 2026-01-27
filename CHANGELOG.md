@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Checksum Management**: Added comprehensive support for managing `sha256` checksums in Formulae.
+    - **CodeLens**: "Update Checksum" CodeLens appears when a mismatch is detected between the file and the fetched URL.
+    - **CodeLens**: "Add Checksum" CodeLens appears for URLs that are missing a checksum line.
+    - **Diagnostics**: Invalid checksums are highlighted with a Warning squiggly line.
+    - **QuickFix**: `Cmd+.` on a checksum warning allows immediate update.
+    - **Support**: Works for standard `url` blocks and `resource do ... end` blocks.
+
+### Changed
+- **Refactoring**: Centralized Regex logic into `src/utils/regex.ts` for consistency across all providers.
+- **Refactoring**: Moved Checksum CodeLens logic to `src/providers/checksum/CodeLensProvider.ts`.
+
+### Fixed
+- **Empty Strings**: Fixed an issue where updating `sha256 ""` would malform the line. It now correctly targets the content between quotes.
+- **Robustness**: Improved regex matching to handle non-standard or partial checksum strings.
+
+### Added
 - **Command Icons**: Added `$(package)` icon to "Install from Source" and `$(info)` icon to "Info" commands in the Command Palette and menus.
 
 ### Changed
